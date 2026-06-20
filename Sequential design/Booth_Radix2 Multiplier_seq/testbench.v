@@ -1,3 +1,4 @@
+
 module booth_tb;
 
     reg clk, rst, start;
@@ -68,8 +69,9 @@ module booth_tb;
         start <= 0;
 
         // Wait until done goes high
-        wait(done);
-        $display("%0dns: A=%d, B=%d, P=%d", $time, A, B, P);
+       @(posedge done);
+$display("%0dns: A=%d, B=%d, P=%d", $time, A, B, P);
+
     end
     endtask
 
