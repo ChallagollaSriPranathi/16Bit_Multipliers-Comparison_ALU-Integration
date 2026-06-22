@@ -1,3 +1,61 @@
+`timescale 1ns / 1ps
+
+module baugh_wooley_16bit #(
+    parameter N = 16
+)(
+    input  [N-1:0]   A,
+    input  [N-1:0]   B,
+    output [2*N-1:0] P
+);
+
+    wire pp [N-1:0][N-1:0];
+
+    genvar i, j;
+    generate
+        for (i = 0; i < N; i = i + 1) begin : row_gen
+            for (j = 0; j < N; j = j + 1) begin : col_gen
+                localparam SIGN_ROW = (i == N-1);
+                localparam SIGN_COL = (j == N-1);
+                localparam CORNER   = SIGN_ROW && SIGN_COL;
+                localparam INVERT   = (SIGN_ROW || SIGN_COL) && !CORNER;
+
+                if (INVERT)
+                    assign pp[i][j] = ~(A[i] & B[j]);
+                else
+                    assign pp[i][j] = A[i] & B[j];
+            end
+        end
+    endgenerate
+
+    wire [2*N-1:0] row [N-1:0];
+
+    generate
+        for (i = 0; i < N; i = i + 1) begin : row_assemble
+            wire [2*N-1:0] row_unshifted;
+            for (j = 0; j < N; j = j + 1) begin : bit_place
+                assign row_unshifted[j] = pp[i][j];
+            end
+            assign row_unshifted[2*N-1:N] = {N{1'b0}};
+            assign row[i] = row_unshifted << i;
+        end
+    endgenerate
+
+    localparam [2*N-1:0] CORRECTION = (1 << (2*N-1)) + (1 << N);
+
+    wire [2*N-1:0] partial_sum [N:0];
+    assign partial_sum[0] = CORRECTION;
+    generate
+        for (i = 0; i < N; i = i + 1) begin : sum_gen
+            assign partial_sum[i+1] = partial_sum[i] + row[i];
+        end
+    endgenerate
+
+    assign P = partial_sum[N];
+
+endmodule
+
+
+
 module baugh_wooley_16bit(input[15:0] A,B,output[31:0] P);
 
 wire pp00=A[0]&B[0],pp01=A[0]&B[1],pp02=A[0]&B[2],pp03=A[0]&B[3],
