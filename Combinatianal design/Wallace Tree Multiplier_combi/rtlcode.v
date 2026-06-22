@@ -28,7 +28,7 @@ wire[31:0] s8,c8; CSA32 CSA8(s7,(c7<<1),pp[9],s8,c8);
 wire[31:0] s9,c9; CSA32 CSA9(s8,(c8<<1),pp[10],s9,c9);
 wire[31:0] s10,c10; CSA32 CSA10(s9,(c9<<1),pp[11],s10,c10);
 wire[31:0] s11,c11; CSA32 CSA11(s10,(c10<<1),pp[12],s11,c11);
-wire[31:0] s12,c12; CSA32 CSA12(s11,(c12<<1),pp[13],s12,c12);
+  wire[31:0] s12,c12; CSA32 CSA12(s11,(c11<<1),pp[13],s12,c12);
 wire[31:0] s13,c13; CSA32 CSA13(s12,(c12<<1),pp[14],s13,c13);
 wire[31:0] s14,c14; CSA32 CSA14(s13,(c13<<1),pp[15],s14,c14);
 
